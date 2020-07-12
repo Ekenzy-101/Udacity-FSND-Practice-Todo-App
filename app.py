@@ -29,7 +29,7 @@ To ensure that tables are created for all models that we have declared and they 
 """
 # db.create_all()
 
-
+# CREATE OPERATION
 @app.route('/todos/create', methods=['POST'])
 def create_todo():
     error = False
@@ -51,7 +51,7 @@ def create_todo():
     else:
         return jsonify(body)
 
-
+# UPDATE OPERATION
 @app.route('/todos/<todo_id>/set-completed', methods={'POST'})
 def set_completed_todo(todo_id):
     try:
@@ -65,7 +65,21 @@ def set_completed_todo(todo_id):
         db.session.close()
     return redirect(url_for('index'))
 
+# DELETE OPERATION
+@app.route('/todos/<todo_id>', methods=['DELETE'])
+def delete_todo(todo_id):
+    try:
+        Todo.query.filter_by(id=todo_id).delete()
+        db.session.commit()
+    except:
+        db.session.rollback()
+    finally:
+        db.session.close()
+    # return jsonify({'success': True})
+    return redirect(url_for('index'))
 
+
+# GET OPERATION
 @app.route('/')
 def index():
     return render_template('index.html', data=Todo.query.all())
